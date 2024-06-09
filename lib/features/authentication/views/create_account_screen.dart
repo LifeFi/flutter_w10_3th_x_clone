@@ -21,10 +21,10 @@ class _CreateAccountState extends State<CreateAccountScreen> {
 
   bool _isAgree = false;
   final bool _isEmail = true;
-  final bool _isShowDatePicker = false;
   bool _pickingDate = false;
   bool _writingEmail = false;
   DateTime initialDate = DateTime.now();
+  bool _autoValidate = false;
 
   Map<String, String> formData = {};
 
@@ -53,18 +53,18 @@ class _CreateAccountState extends State<CreateAccountScreen> {
     });
   }
 
-  _showDatePicker() {
+  void _showDatePicker() {
     setState(() {
       _pickingDate = true;
       _writingEmail = false;
     });
-    showCupertinoModalPopup(
+    showModalBottomSheet(
       context: context,
       barrierColor: Colors.white.withOpacity(0),
       builder: (context) {
-        return SizedBox(
+        return Container(
           height: 200.0,
-          width: double.infinity,
+          color: Colors.white,
           child: CupertinoDatePicker(
             maximumDate: initialDate,
             initialDateTime: initialDate,
@@ -82,6 +82,10 @@ class _CreateAccountState extends State<CreateAccountScreen> {
   }
 
   _onSubmitTap() async {
+    setState(() {
+      _autoValidate = true;
+    });
+
     if (!_isAgree) {
       _isAgree = await Navigator.push(
             context,
@@ -144,6 +148,9 @@ class _CreateAccountState extends State<CreateAccountScreen> {
             ),
             child: Form(
               key: _formKey,
+              autovalidateMode: _autoValidate
+                  ? AutovalidateMode.onUserInteraction
+                  : AutovalidateMode.disabled,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -189,7 +196,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                     ),
                     cursorColor: Theme.of(context).primaryColor,
                     validator: (value) {
-                      if (value != null && value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return "Please write your name";
                       }
                       return null;
@@ -212,7 +219,6 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                   ),
                   Gaps.v10,
                   TextFormField(
-                    autovalidateMode: AutovalidateMode.disabled,
                     style: TextStyle(
                       fontSize: Sizes.size18,
                       fontWeight: FontWeight.w600,
@@ -245,7 +251,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                     ),
                     cursorColor: Theme.of(context).primaryColor,
                     validator: (value) {
-                      if (value != null && value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return "Please write your Phone number or email address";
                       }
                       return null;
@@ -409,7 +415,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                       onTap: _formKey.currentState != null &&
                               _formKey.currentState!.validate()
                           ? _onSubmitTap
-                          : null,
+                          : _onSubmitTap,
                       child: Container(
                         height: Sizes.size64,
                         // width: Sizes.size96,
@@ -421,9 +427,10 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                         child: const Text(
                           "Sign up",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: Sizes.size24,
-                              fontWeight: FontWeight.w700),
+                            color: Colors.white,
+                            fontSize: Sizes.size24,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     )
@@ -457,9 +464,10 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                             child: const Text(
                               "Next",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: Sizes.size20,
-                                  fontWeight: FontWeight.w600),
+                                color: Colors.white,
+                                fontSize: Sizes.size20,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
