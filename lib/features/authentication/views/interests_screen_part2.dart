@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/onboadring_screen.dart';
+import 'package:flutter_w10_3th_x_clone/features/main_navigation/main_navigation_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 const List<String> _musicInterestList = [
@@ -64,7 +65,7 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const OnboardingScreen(),
+        builder: (context) => const MainNavigationScreen(),
       ),
     );
   }

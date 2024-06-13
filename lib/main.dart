@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_w10_3th_x_clone/features/authentication/views/initial_screen.dart';
+import 'package:flutter_w10_3th_x_clone/features/main_navigation/main_navigation_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const InitialScreen(),
+      home: const MainNavigationScreen(),
     );
   }
 }
