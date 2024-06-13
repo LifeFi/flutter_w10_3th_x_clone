@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
+import 'package:flutter_w10_3th_x_clone/features/authentication/views/confirmation_code_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/customizing_experience_screen.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -99,14 +100,22 @@ class _CreateAccountState extends State<CreateAccountScreen> {
       if (_formKey.currentState != null) {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: Text("$formData $_isAgree"),
-              );
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConfirmationCodeScreen(
+                email: formData["email"]!,
+              ),
+            ),
           );
+          // showDialog(
+          //   context: context,
+          //   builder: (context) {
+          //     return AlertDialog(
+          //       content: Text("$formData $_isAgree"),
+          //     );
+          //   },
+          // );
         }
       }
     }
