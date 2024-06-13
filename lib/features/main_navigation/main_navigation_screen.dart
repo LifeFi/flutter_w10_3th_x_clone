@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/home/views/home_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/main_navigation/widgets/nav_tab.dart';
+import 'package:flutter_w10_3th_x_clone/features/post/view/post_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -14,10 +15,37 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  void _onTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Future<void> _onTap(int index) async {
+    if (index == 2) {
+      final bool isPosted;
+      isPosted = await _showPostModal();
+      if (isPosted) {
+        setState(() {
+          _selectedIndex = 0;
+        });
+      }
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  Future<bool> _showPostModal() async {
+    final bool isPosted;
+    isPosted = await showModalBottomSheet(
+          isScrollControlled: true,
+          elevation: 0,
+          context: context,
+          builder: (context) => const PostScreen(),
+          backgroundColor: Colors.white,
+          clipBehavior: Clip.hardEdge,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.size16),
+          ),
+        ) ??
+        false;
+    return isPosted;
   }
 
   @override
