@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
-import 'package:flutter_w10_3th_x_clone/features/home/views/widgets/report_modalmottomsheet.dart';
+import 'package:flutter_w10_3th_x_clone/features/common/widgets/report_modalmottomsheet.dart';
 
 class MoreModalbottomsheet extends StatelessWidget {
   const MoreModalbottomsheet({super.key});

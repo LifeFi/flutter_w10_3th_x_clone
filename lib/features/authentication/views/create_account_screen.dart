@@ -8,6 +8,9 @@ import 'package:flutter_w10_3th_x_clone/features/authentication/views/customizin
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CreateAccountScreen extends StatefulWidget {
+  static const String routeName = "signup";
+  static const String routeURL = "/signup";
+
   const CreateAccountScreen({
     super.key,
   });

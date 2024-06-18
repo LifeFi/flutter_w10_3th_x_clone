@@ -5,10 +5,18 @@ import 'package:flutter_w10_3th_x_clone/features/home/views/home_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/main_navigation/widgets/nav_tab.dart';
 import 'package:flutter_w10_3th_x_clone/features/post/view/post_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/search/views/search_screen.dart';
+import 'package:flutter_w10_3th_x_clone/features/users/views/user_profile_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  static const String routeName = "mainNavigation";
+  final String tab;
+
+  const MainNavigationScreen({
+    super.key,
+    this.tab = "home",
+  });
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -17,6 +25,13 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
+  final List<String> _tabs = [
+    "home",
+    "search",
+    "post",
+    "activity",
+    "profile",
+  ];
   Future<void> _onTap(int index) async {
     if (index == 2) {
       final bool isPosted;
@@ -27,6 +42,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         });
       }
     } else {
+      context.go("/${_tabs[index]}");
       setState(() {
         _selectedIndex = index;
       });
@@ -79,16 +95,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           Offstage(
             offstage: _selectedIndex != 4,
-            child: const Placeholder(
-              child: Center(
-                child: Text(
-                  "Profile",
-                  style: TextStyle(
-                    fontSize: Sizes.size28,
-                  ),
-                ),
-              ),
-            ),
+            child: const UserProfileScreen(),
           ),
         ],
       ),

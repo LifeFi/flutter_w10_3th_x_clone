@@ -19,6 +19,9 @@ final Map<String, dynamic> user = {
 };
 
 class PostScreen extends StatefulWidget {
+  static const String routeName = "post";
+  static const String routeURL = "/post";
+
   const PostScreen({super.key});
 
   @override

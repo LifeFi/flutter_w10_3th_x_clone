@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_w10_3th_x_clone/features/main_navigation/main_navigation_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_w10_3th_x_clone/router.dart';
+import 'package:go_router/go_router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+    ],
+  );
+
+  GoRouter.optionURLReflectsImperativeAPIs = true;
+
   runApp(const MyApp());
 }
 
@@ -10,7 +22,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       title: 'Twitter Clone',
       theme: ThemeData(
@@ -23,7 +36,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainNavigationScreen(),
     );
   }
 }
