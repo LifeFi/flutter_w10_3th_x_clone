@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
+import 'package:flutter_w10_3th_x_clone/features/activity/views/activity_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/home/views/home_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/main_navigation/widgets/nav_tab.dart';
 import 'package:flutter_w10_3th_x_clone/features/post/view/post_screen.dart';
+import 'package:flutter_w10_3th_x_clone/features/search/views/search_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -57,19 +59,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             offstage: _selectedIndex != 0,
             child: const HomeScreen(),
           ),
-          Offstage(
-            offstage: _selectedIndex != 1,
-            child: const Placeholder(
-              child: Center(
-                child: Text(
-                  "Search",
-                  style: TextStyle(
-                    fontSize: Sizes.size28,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          Offstage(offstage: _selectedIndex != 1, child: const SearchScreen()),
           Offstage(
             offstage: _selectedIndex != 2,
             child: const Placeholder(
@@ -85,16 +75,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           Offstage(
             offstage: _selectedIndex != 3,
-            child: const Placeholder(
-              child: Center(
-                child: Text(
-                  "Notifications",
-                  style: TextStyle(
-                    fontSize: Sizes.size28,
-                  ),
-                ),
-              ),
-            ),
+            child: const ActivityScreen(),
           ),
           Offstage(
             offstage: _selectedIndex != 4,

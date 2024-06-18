@@ -4,6 +4,7 @@ import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/home/views/widgets/feeds_data.dart';
 import 'package:flutter_w10_3th_x_clone/features/home/views/widgets/more_modalbottomsheet.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final List<Map<String, dynamic>> feeds = [
@@ -73,21 +74,6 @@ class HomeScreen extends StatelessWidget {
     orderedFeeds.sort(
       (a, b) => b["createdAt"].compareTo(a["createdAt"]),
     );
-
-    String diffTimeString(DateTime dateTime) {
-      final curTime = DateTime.now();
-      final diffMSec =
-          curTime.millisecondsSinceEpoch - dateTime.millisecondsSinceEpoch;
-      String result;
-      if (diffMSec < 60 * 60 * 1000) {
-        result = "${(diffMSec / (60 * 1000)).round()}m";
-      } else if (diffMSec < 24 * 60 * 60 * 1000) {
-        result = "${(diffMSec / (60 * 60 * 1000)).round()}h";
-      } else {
-        result = "${(diffMSec / (24 * 60 * 60 * 1000)).round()}d";
-      }
-      return result;
-    }
 
     return SafeArea(
       child: Padding(
