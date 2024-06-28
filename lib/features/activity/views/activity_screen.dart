@@ -1,9 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/activity/widgets/activity_data.dart';
+import 'package:flutter_w10_3th_x_clone/features/main_navigation/widgets/show_bottom_tap_bar.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
 import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final tabs = [
@@ -15,14 +18,40 @@ final tabs = [
   "Likes",
 ];
 
-class ActivityScreen extends StatefulWidget {
+class ActivityScreen extends ConsumerStatefulWidget {
   const ActivityScreen({super.key});
 
   @override
-  State<ActivityScreen> createState() => _ActivityScreenState();
+  ActivityScreenState createState() => ActivityScreenState();
 }
 
-class _ActivityScreenState extends State<ActivityScreen> {
+class ActivityScreenState extends ConsumerState<ActivityScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  _toggleShowBottomTabBar() {
+    if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.reverse &&
+        ref.read(showBottomTabBarProvider.notifier).state) {
+      ref.read(showBottomTabBarProvider.notifier).state = false;
+    } else if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.forward &&
+        !ref.read(showBottomTabBarProvider.notifier).state) {
+      ref.read(showBottomTabBarProvider.notifier).state = true;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_toggleShowBottomTabBar);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   final List<int> _followingList = [];
 
   void _onFollowTap(int id) {
@@ -39,12 +68,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.white,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -71,13 +100,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   horizontal: 3,
                   vertical: 0,
                 ),
-                labelColor: Colors.white,
+                labelColor: isDark ? Colors.black : Colors.white54,
+                unselectedLabelColor: isDark ? Colors.white : Colors.black,
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                   borderRadius: BorderRadius.circular(Sizes.size5),
                   border: Border.all(
                     color: Colors.grey,
@@ -114,6 +144,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
           children: [
             for (var tab in tabs)
               ListView.builder(
+                controller: _scrollController,
                 itemCount: activityData.data.length,
                 itemBuilder: (context, index) {
                   if (tab == "Follow" &&

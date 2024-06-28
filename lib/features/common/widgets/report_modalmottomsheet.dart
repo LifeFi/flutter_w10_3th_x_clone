@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ReportModalbottomsheet extends StatelessWidget {
+class ReportModalbottomsheet extends ConsumerWidget {
   const ReportModalbottomsheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.7,
       child: Scaffold(
+        backgroundColor: isDark
+            ? Theme.of(context).bottomSheetTheme.modalBackgroundColor
+            : Colors.white,
         body: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: Sizes.size10,

@@ -1,34 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_w10_3th_x_clone/features/authentication/view_models/signup_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
+import 'package:flutter_w10_3th_x_clone/features/authentication/views/agree_screen.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/confirmation_code_screen.dart';
-import 'package:flutter_w10_3th_x_clone/features/authentication/views/customizing_experience_screen.dart';
-
+import 'package:flutter_w10_3th_x_clone/utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CreateAccountScreen extends StatefulWidget {
-  static const String routeName = "signup";
-  static const String routeURL = "/signup";
-
+class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({
     super.key,
   });
 
   @override
-  State<CreateAccountScreen> createState() => _CreateAccountState();
+  CreateAccountScreenState createState() => CreateAccountScreenState();
 }
 
-class _CreateAccountState extends State<CreateAccountScreen> {
+class CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _birthdayController = TextEditingController();
 
-  bool _isAgree = false;
-  final bool _isEmail = true;
+  bool isAgree = false;
+  bool isEmail = true;
+  bool isShowDatePicker = false;
   bool _pickingDate = false;
   bool _writingEmail = false;
   DateTime initialDate = DateTime.now();
-  bool _autoValidate = false;
 
   Map<String, String> formData = {};
 
@@ -57,24 +58,25 @@ class _CreateAccountState extends State<CreateAccountScreen> {
     });
   }
 
-  void _showDatePicker() {
+  _showDatePicker() {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     setState(() {
       _pickingDate = true;
       _writingEmail = false;
     });
-    showModalBottomSheet(
+    showCupertinoModalPopup(
       context: context,
       barrierColor: Colors.white.withOpacity(0),
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: 200.0,
-          color: Colors.white,
+          width: double.infinity,
           child: CupertinoDatePicker(
             maximumDate: initialDate,
             initialDateTime: initialDate,
             mode: CupertinoDatePickerMode.date,
             onDateTimeChanged: _setTextFieldDate,
-            backgroundColor: Colors.white,
+            backgroundColor: isDark ? Colors.black : Colors.white,
           ),
         );
       },
@@ -86,15 +88,11 @@ class _CreateAccountState extends State<CreateAccountScreen> {
   }
 
   _onSubmitTap() async {
-    setState(() {
-      _autoValidate = true;
-    });
-
-    if (!_isAgree) {
-      _isAgree = await Navigator.push(
+    if (!isAgree) {
+      isAgree = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CustomizingExperienceScreen(),
+              builder: (context) => const AgreeScreen(),
             ),
           ) ??
           false;
@@ -103,6 +101,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
       if (_formKey.currentState != null) {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
+          ref.read(signUpForm.notifier).state = {"email": formData["email"]};
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -111,14 +110,14 @@ class _CreateAccountState extends State<CreateAccountScreen> {
               ),
             ),
           );
-          // showDialog(
-          //   context: context,
-          //   builder: (context) {
-          //     return AlertDialog(
-          //       content: Text("$formData $_isAgree"),
-          //     );
-          //   },
-          // );
+          /* showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text("$formData $isAgree"),
+              );
+            },
+          ); */
         }
       }
     }
@@ -126,6 +125,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return GestureDetector(
       onTap: _onScaffoldTap,
       child: Scaffold(
@@ -145,10 +145,14 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                 )),
           ),
           leadingWidth: 100,
-          title: FaIcon(
-            FontAwesomeIcons.twitter,
-            size: Sizes.size36,
-            color: Theme.of(context).primaryColor,
+          title: SvgPicture.asset(
+            'assets/images/thread.svg',
+            width: 32,
+            height: 32,
+            colorFilter: ColorFilter.mode(
+              isDark ? Colors.white : Colors.black,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -160,9 +164,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
             ),
             child: Form(
               key: _formKey,
-              autovalidateMode: _autoValidate
-                  ? AutovalidateMode.onUserInteraction
-                  : AutovalidateMode.disabled,
+              // autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -194,7 +196,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                       suffix: formData["name"] != null &&
@@ -208,7 +210,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                     ),
                     cursorColor: Theme.of(context).primaryColor,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value != null && value.isEmpty) {
                         return "Please write your name";
                       }
                       return null;
@@ -241,7 +243,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                       hintStyle: TextStyle(
                         color: Colors.grey.shade500,
                       ),
-                      labelText: _isEmail ? "Email" : "Phone",
+                      labelText: isEmail ? "Email" : "Phone",
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey.shade400,
@@ -249,7 +251,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                       suffix: formData["email"] != null &&
@@ -263,7 +265,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                     ),
                     cursorColor: Theme.of(context).primaryColor,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value != null && value.isEmpty) {
                         return "Please write your Phone number or email address";
                       }
                       return null;
@@ -313,7 +315,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                     ),
@@ -348,7 +350,7 @@ class _CreateAccountState extends State<CreateAccountScreen> {
                           ),
                         )
                       : Container(),
-                  _isAgree && !_pickingDate
+                  isAgree && !_pickingDate
                       ? RichText(
                           text: TextSpan(
                             style: TextStyle(
@@ -419,74 +421,75 @@ class _CreateAccountState extends State<CreateAccountScreen> {
           padding: const EdgeInsets.symmetric(
             horizontal: Sizes.size20,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _isAgree
-                  ? GestureDetector(
+          child: isAgree
+              ? GestureDetector(
+                  onTap: _formKey.currentState != null &&
+                          _formKey.currentState!.validate()
+                      ? _onSubmitTap
+                      : null,
+                  child: Container(
+                    height: Sizes.size64,
+                    // width: Sizes.size96,
+                    alignment: const Alignment(0, 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(32),
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: const Text(
+                      "Sign up",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: Sizes.size24,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _writingEmail
+                        ? const Text(
+                            "Use phone instead",
+                            style: TextStyle(
+                              fontSize: Sizes.size20,
+                            ),
+                          )
+                        : const Text(""),
+                    GestureDetector(
                       onTap: _formKey.currentState != null &&
                               _formKey.currentState!.validate()
                           ? _onSubmitTap
-                          : _onSubmitTap,
+                          : null,
                       child: Container(
-                        height: Sizes.size64,
-                        // width: Sizes.size96,
+                        height: Sizes.size52,
+                        width: Sizes.size96,
                         alignment: const Alignment(0, 0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(32),
-                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(26),
+                          color: !(_formKey.currentState != null &&
+                                  _formKey.currentState!.validate())
+                              ? Colors.grey
+                              : isDark
+                                  ? Colors.white
+                                  : Colors.black,
                         ),
-                        child: const Text(
-                          "Sign up",
+                        child: Text(
+                          "Next",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: Sizes.size24,
-                            fontWeight: FontWeight.w700,
+                            color: !(_formKey.currentState != null &&
+                                    _formKey.currentState!.validate())
+                                ? Colors.white
+                                : isDark
+                                    ? Colors.black
+                                    : Colors.white,
+                            fontSize: Sizes.size20,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _writingEmail
-                            ? const Text(
-                                "Use phone instead",
-                                style: TextStyle(
-                                  fontSize: Sizes.size20,
-                                ),
-                              )
-                            : const Text(""),
-                        GestureDetector(
-                          onTap: _formKey.currentState != null &&
-                                  _formKey.currentState!.validate()
-                              ? _onSubmitTap
-                              : null,
-                          child: Container(
-                            height: Sizes.size52,
-                            width: Sizes.size96,
-                            alignment: const Alignment(0, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(26),
-                              color: _formKey.currentState != null &&
-                                      _formKey.currentState!.validate()
-                                  ? Colors.black
-                                  : Colors.grey,
-                            ),
-                            child: const Text(
-                              "Next",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
-            ],
-          ),
+                  ],
+                ),
         ),
       ),
     );

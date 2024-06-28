@@ -1,18 +1,16 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_w10_3th_x_clone/utils.dart';
 
 class MyFeedsData extends ChangeNotifier {
   Map<String, dynamic> me = {
     "id": random.integer(1000000),
     "name": faker.person.name(),
-    // "avatar": faker.image.image(
-    //   keywords: ["avatar", "profile"],
-    //   height: 80,
-    //   width: 80,
-    //   random: true,
-    // ),
-    "avatar": getImage(),
+    "avatar": faker.image.image(
+      keywords: ["avatar", "profile"],
+      height: 80,
+      width: 80,
+      random: true,
+    ),
     "isMe": false,
   };
 
@@ -29,10 +27,9 @@ class MyFeedsData extends ChangeNotifier {
         "content": faker.lorem.sentence(),
         "images": [
           for (var i = 0; i < random.integer(5); i++)
-            // faker.image.image(
-            //   random: true,
-            // ),
-            getImage(),
+            faker.image.image(
+              random: true,
+            ),
         ],
         "createdAt": DateTime.now().subtract(
           Duration(
@@ -44,13 +41,12 @@ class MyFeedsData extends ChangeNotifier {
             {
               "id": random.integer(1000000),
               "name": faker.person.name(),
-              // "avatar": faker.image.image(
-              //   keywords: ["avatar", "profile"],
-              //   height: 80,
-              //   width: 80,
-              //   random: true,
-              // ),
-              "avatar": getImage(),
+              "avatar": faker.image.image(
+                keywords: ["avatar", "profile"],
+                height: 80,
+                width: 80,
+                random: true,
+              ),
             }
         ],
         "likes": random.integer(1000),

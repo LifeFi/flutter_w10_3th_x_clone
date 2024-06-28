@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/common/widgets/report_modalmottomsheet.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MoreModalbottomsheet extends StatelessWidget {
+class MoreModalbottomsheet extends ConsumerWidget {
   const MoreModalbottomsheet({super.key});
 
   void _onReportTap(BuildContext context) {
@@ -13,19 +16,25 @@ class MoreModalbottomsheet extends StatelessWidget {
       elevation: 0,
       context: context,
       builder: (context) => const ReportModalbottomsheet(),
-      backgroundColor: Colors.white,
       clipBehavior: Clip.hardEdge,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Sizes.size16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(Sizes.size16),
+          topRight: Radius.circular(Sizes.size16),
+        ),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return SizedBox(
       height: 400,
       child: Scaffold(
+        backgroundColor: isDark
+            ? Theme.of(context).bottomSheetTheme.modalBackgroundColor
+            : Colors.white,
         body: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: Sizes.size20,
@@ -36,7 +45,7 @@ class MoreModalbottomsheet extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Sizes.size12),
-                  color: Colors.grey.shade200,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +94,7 @@ class MoreModalbottomsheet extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Sizes.size12),
-                  color: Colors.grey.shade200,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

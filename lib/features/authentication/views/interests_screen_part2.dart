@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
-import 'package:flutter_w10_3th_x_clone/features/authentication/views/onboadring_screen.dart';
-import 'package:flutter_w10_3th_x_clone/features/main_navigation/main_navigation_screen.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 const List<String> _musicInterestList = [
   "Rap",
@@ -30,54 +32,49 @@ const List<String> _entertainmentInterestList = [
   "Entertainment",
 ];
 
-class InterestsScreenPart2 extends StatefulWidget {
+class InterestsScreenPart2 extends ConsumerStatefulWidget {
   const InterestsScreenPart2({super.key});
 
   @override
-  State<InterestsScreenPart2> createState() => _InterestsScreenPart2State();
+  InterestsScreenPart2State createState() => InterestsScreenPart2State();
 }
 
-class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
+class InterestsScreenPart2State extends ConsumerState<InterestsScreenPart2> {
   final List<String> _selectedMusicInterests = [];
   final List<String> _selectedEntertainmentInterests = [];
 
-  void _onMusicInterestTap(String interest) {
-    if (_selectedMusicInterests.contains(interest)) {
-      _selectedMusicInterests.remove(interest);
-    } else {
-      _selectedMusicInterests.add(interest);
-    }
-    print(_selectedMusicInterests);
-    setState(() {});
+  void _onInterestTap(String interest, List<String> interestList) {
+    setState(
+      () {
+        if (interestList.contains(interest)) {
+          interestList.remove(interest);
+        } else {
+          interestList.add(interest);
+        }
+      },
+    );
   }
 
-  void _onEntertainmentInterestTap(String interest) {
-    if (_selectedEntertainmentInterests.contains(interest)) {
-      _selectedEntertainmentInterests.remove(interest);
-    } else {
-      _selectedEntertainmentInterests.add(interest);
-    }
-    print(_selectedEntertainmentInterests);
-    setState(() {});
-  }
+  int _selectedLength() =>
+      _selectedMusicInterests.length + _selectedEntertainmentInterests.length;
 
   _goToNext() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MainNavigationScreen(),
-      ),
-    );
+    context.go("/home");
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return Scaffold(
       appBar: AppBar(
-        title: FaIcon(
-          FontAwesomeIcons.twitter,
-          size: Sizes.size36,
-          color: Theme.of(context).primaryColor,
+        title: SvgPicture.asset(
+          'assets/images/thread.svg',
+          width: 32,
+          height: 32,
+          colorFilter: ColorFilter.mode(
+            isDark ? Colors.white : Colors.black,
+            BlendMode.srcIn,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -130,7 +127,8 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
                     children: [
                       for (var interest in _musicInterestList)
                         GestureDetector(
-                          onTap: () => _onMusicInterestTap(interest),
+                          onTap: () =>
+                              _onInterestTap(interest, _selectedMusicInterests),
                           child: Container(
                             height: 45,
                             alignment: Alignment.center,
@@ -139,28 +137,28 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
                               horizontal: Sizes.size12,
                             ),
                             decoration: BoxDecoration(
-                              color: _selectedMusicInterests.contains(interest)
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.white,
-                              border: _selectedMusicInterests.contains(interest)
-                                  ? Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                    )
-                                  : Border.all(
-                                      color: Colors.grey,
-                                    ),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
+                                color:
+                                    _selectedMusicInterests.contains(interest)
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.white,
+                                border: _selectedMusicInterests
+                                        .contains(interest)
+                                    ? Border.all(
+                                        color: Theme.of(context).primaryColor,
+                                      )
+                                    : Border.all(
+                                        color: Colors.grey,
+                                      ),
+                                borderRadius: BorderRadius.circular(25)),
                             child: Text(
                               interest,
                               style: TextStyle(
-                                color:
-                                    _selectedMusicInterests.contains(interest)
-                                        ? Colors.white
-                                        : Colors.black,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                  color:
+                                      _selectedMusicInterests.contains(interest)
+                                          ? Colors.white
+                                          : Colors.black,
+                                  fontSize: Sizes.size14,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                         )
@@ -192,7 +190,8 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
                     children: [
                       for (var interest in _entertainmentInterestList)
                         GestureDetector(
-                          onTap: () => _onEntertainmentInterestTap(interest),
+                          onTap: () => _onInterestTap(
+                              interest, _selectedEntertainmentInterests),
                           child: Container(
                             height: 45,
                             alignment: Alignment.center,
@@ -201,30 +200,28 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
                               horizontal: Sizes.size12,
                             ),
                             decoration: BoxDecoration(
-                              color: _selectedEntertainmentInterests
-                                      .contains(interest)
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.white,
-                              border: _selectedEntertainmentInterests
-                                      .contains(interest)
-                                  ? Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                    )
-                                  : Border.all(
-                                      color: Colors.grey,
-                                    ),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
+                                color: _selectedEntertainmentInterests
+                                        .contains(interest)
+                                    ? Theme.of(context).primaryColor
+                                    : Colors.white,
+                                border: _selectedEntertainmentInterests
+                                        .contains(interest)
+                                    ? Border.all(
+                                        color: Theme.of(context).primaryColor,
+                                      )
+                                    : Border.all(
+                                        color: Colors.grey,
+                                      ),
+                                borderRadius: BorderRadius.circular(25)),
                             child: Text(
                               interest,
                               style: TextStyle(
-                                color: _selectedEntertainmentInterests
-                                        .contains(interest)
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                  color: _selectedEntertainmentInterests
+                                          .contains(interest)
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: Sizes.size14,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                         )
@@ -241,7 +238,6 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
       ),
       bottomNavigationBar: BottomAppBar(
         padding: const EdgeInsets.all(0),
-        color: Colors.white,
         elevation: 0,
         child: Container(
           padding: const EdgeInsets.only(
@@ -260,22 +256,16 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _selectedMusicInterests.length +
-                            _selectedEntertainmentInterests.length >=
-                        3
+                _selectedLength() >= 3
                     ? "Great work 🎉"
-                    : "${_selectedMusicInterests.length + _selectedEntertainmentInterests.length} of 3 selected",
+                    : "${_selectedLength()} of 3 selected",
                 style: TextStyle(
                   color: Colors.grey.shade700,
                   fontSize: Sizes.size16,
                 ),
               ),
               GestureDetector(
-                onTap: _selectedMusicInterests.length +
-                            _selectedEntertainmentInterests.length >=
-                        3
-                    ? _goToNext
-                    : () {},
+                onTap: _selectedLength() >= 3 ? _goToNext : () {},
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: Sizes.size52,
@@ -283,18 +273,23 @@ class _InterestsScreenPart2State extends State<InterestsScreenPart2> {
                   alignment: const Alignment(0, 0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
-                    color: _selectedMusicInterests.length +
-                                _selectedEntertainmentInterests.length >=
-                            3
-                        ? Colors.black
-                        : Colors.grey,
+                    color: !(_selectedLength() >= 3)
+                        ? Colors.grey
+                        : isDark
+                            ? Colors.white
+                            : Colors.black,
                   ),
-                  child: const Text(
+                  child: Text(
                     "Next",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Sizes.size20,
-                        fontWeight: FontWeight.w600),
+                      fontSize: Sizes.size20,
+                      fontWeight: FontWeight.w600,
+                      color: !(_selectedLength() >= 3)
+                          ? Colors.white
+                          : isDark
+                              ? Colors.black
+                              : Colors.white,
+                    ),
                   ),
                 ),
               ),

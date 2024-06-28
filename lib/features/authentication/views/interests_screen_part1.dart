@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/interests_screen_part2.dart';
@@ -21,17 +25,17 @@ const List<String> _interestList = [
   "FutureMe",
 ];
 
-class InterestsScreenPart1 extends StatefulWidget {
+class InterestsScreenPart1 extends ConsumerStatefulWidget {
   static const String routeName = "interest";
   static const String routeURL = "/interest";
 
   const InterestsScreenPart1({super.key});
 
   @override
-  State<InterestsScreenPart1> createState() => _InterestsScreenPart1State();
+  InterestsScreenPart1State createState() => InterestsScreenPart1State();
 }
 
-class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
+class InterestsScreenPart1State extends ConsumerState<InterestsScreenPart1> {
   final List<String> _selectedInterests = [];
 
   void _onInterestTap(String interest) {
@@ -40,7 +44,6 @@ class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
     } else {
       _selectedInterests.add(interest);
     }
-    print(_selectedInterests);
     setState(() {});
   }
 
@@ -55,12 +58,17 @@ class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return Scaffold(
       appBar: AppBar(
-        title: FaIcon(
-          FontAwesomeIcons.twitter,
-          size: Sizes.size36,
-          color: Theme.of(context).primaryColor,
+        title: SvgPicture.asset(
+          'assets/images/thread.svg',
+          width: 32,
+          height: 32,
+          colorFilter: ColorFilter.mode(
+            isDark ? Colors.white : Colors.black,
+            BlendMode.srcIn,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -159,7 +167,6 @@ class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
       ),
       bottomNavigationBar: BottomAppBar(
         padding: const EdgeInsets.all(0),
-        color: Colors.white,
         elevation: 0,
         child: Container(
           padding: const EdgeInsets.only(
@@ -167,10 +174,10 @@ class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
             left: Sizes.size14,
             right: Sizes.size14,
           ),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: Colors.grey,
+                color: Colors.grey.withOpacity(0.3),
               ),
             ),
           ),
@@ -195,16 +202,23 @@ class _InterestsScreenPart1State extends State<InterestsScreenPart1> {
                   alignment: const Alignment(0, 0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
-                    color: _selectedInterests.length >= 3
-                        ? Colors.black
-                        : Colors.grey,
+                    color: !(_selectedInterests.length >= 3)
+                        ? Colors.grey
+                        : isDark
+                            ? Colors.white
+                            : Colors.black,
                   ),
-                  child: const Text(
+                  child: Text(
                     "Next",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Sizes.size20,
-                        fontWeight: FontWeight.w600),
+                      fontSize: Sizes.size20,
+                      fontWeight: FontWeight.w600,
+                      color: !(_selectedInterests.length >= 3)
+                          ? Colors.white
+                          : isDark
+                              ? Colors.black
+                              : Colors.white,
+                    ),
                   ),
                 ),
               ),

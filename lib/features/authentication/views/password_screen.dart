@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_w10_3th_x_clone/features/authentication/view_models/signup_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/interests_screen_part1.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class PasswordScreen extends StatefulWidget {
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+
+class PasswordScreen extends ConsumerStatefulWidget {
   const PasswordScreen({super.key});
 
   @override
-  State<PasswordScreen> createState() => _PasswordScreenState();
+  PasswordScreenState createState() => PasswordScreenState();
 }
 
-class _PasswordScreenState extends State<PasswordScreen> {
+class PasswordScreenState extends ConsumerState<PasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isEyeOn = false;
 
@@ -34,11 +41,14 @@ class _PasswordScreenState extends State<PasswordScreen> {
   }
 
   _onSubmitTap() {
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => const InterestsScreenPart1(),
-        ),
-        (route) => false);
+    final state = ref.read(signUpForm.notifier).state;
+    ref.read(signUpForm.notifier).state = {
+      ...state,
+      "password": _passwordController.value.text
+    };
+    // print(ref.read(signUpForm));
+    ref.read(signUpProvider.notifier).emailSignUp(context);
+    // context.goNamed(InterestsScreenPart1.routeName);
   }
 
   @override
@@ -49,14 +59,19 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return GestureDetector(
       onTap: _onScaffoldTap,
       child: Scaffold(
         appBar: AppBar(
-          title: FaIcon(
-            FontAwesomeIcons.twitter,
-            size: Sizes.size36,
-            color: Theme.of(context).primaryColor,
+          title: SvgPicture.asset(
+            'assets/images/thread.svg',
+            width: 32,
+            height: 32,
+            colorFilter: ColorFilter.mode(
+              isDark ? Colors.white : Colors.black,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         body: Padding(
@@ -146,22 +161,35 @@ class _PasswordScreenState extends State<PasswordScreen> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: _passwordValidator() ? _onSubmitTap : () => {},
+                onTap:
+                    _passwordValidator() || ref.watch(signUpProvider).isLoading
+                        ? _onSubmitTap
+                        : () => {},
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: 50,
                   width: double.maxFinite,
                   alignment: const Alignment(0, 0),
                   decoration: BoxDecoration(
-                    color: _passwordValidator() ? Colors.black : Colors.grey,
+                    color: !_passwordValidator() ||
+                            ref.watch(signUpProvider).isLoading
+                        ? Colors.grey
+                        : isDark
+                            ? Colors.white
+                            : Colors.black,
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Next",
                     style: TextStyle(
                       fontSize: Sizes.size20,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: !_passwordValidator() ||
+                              ref.watch(signUpProvider).isLoading
+                          ? Colors.white
+                          : isDark
+                              ? Colors.black
+                              : Colors.white,
                     ),
                   ),
                 ),

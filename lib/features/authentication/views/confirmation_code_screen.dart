@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_w10_3th_x_clone/features/settings/view_models/settings_view_model.dart';
+import 'package:flutter_w10_3th_x_clone/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_w10_3th_x_clone/constants/gaps.dart';
 import 'package:flutter_w10_3th_x_clone/constants/sizes.dart';
 import 'package:flutter_w10_3th_x_clone/features/authentication/views/password_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ConfirmationCodeScreen extends StatefulWidget {
+class ConfirmationCodeScreen extends ConsumerStatefulWidget {
   final String email;
   const ConfirmationCodeScreen({
     super.key,
@@ -13,29 +17,40 @@ class ConfirmationCodeScreen extends StatefulWidget {
   });
 
   @override
-  State<ConfirmationCodeScreen> createState() => _ConfirmationCodeScreenState();
+  ConfirmationCodeScreenState createState() => ConfirmationCodeScreenState();
 }
 
-class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
+class ConfirmationCodeScreenState
+    extends ConsumerState<ConfirmationCodeScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {};
 
   _onSubmitTap() {
-    Navigator.of(context).pushAndRemoveUntil(
+    /* Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const PasswordScreen(),
         ),
-        (route) => false);
+        (route) => false); */
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PasswordScreen(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = isDarkMode(context, ref.watch(settingsProvider).themeMode);
     return Scaffold(
       appBar: AppBar(
-        title: FaIcon(
-          FontAwesomeIcons.twitter,
-          size: Sizes.size36,
-          color: Theme.of(context).primaryColor,
+        title: SvgPicture.asset(
+          'assets/images/thread.svg',
+          width: 32,
+          height: 32,
+          colorFilter: ColorFilter.mode(
+            isDark ? Colors.white : Colors.black,
+            BlendMode.srcIn,
+          ),
         ),
       ),
       body: Padding(
@@ -63,14 +78,14 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
                 "Enter it below to verify",
                 style: TextStyle(
                   fontSize: Sizes.size18,
-                  color: Colors.grey.shade700,
+                  color: Colors.grey.withOpacity(0.6),
                 ),
               ),
               Text(
                 "${widget.email}.",
                 style: TextStyle(
                   fontSize: Sizes.size18,
-                  color: Colors.grey.shade700,
+                  color: Colors.grey.withOpacity(0.6),
                 ),
               ),
               Gaps.v20,
@@ -165,18 +180,25 @@ class _ConfirmationCodeScreenState extends State<ConfirmationCodeScreen> {
                   width: double.maxFinite,
                   alignment: const Alignment(0, 0),
                   decoration: BoxDecoration(
-                    color: _formKey.currentState != null &&
-                            _formKey.currentState!.validate()
-                        ? Colors.black
-                        : Colors.grey.shade500,
+                    color: !(_formKey.currentState != null &&
+                            _formKey.currentState!.validate())
+                        ? Colors.grey
+                        : isDark
+                            ? Colors.white
+                            : Colors.black,
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Next",
                     style: TextStyle(
                       fontSize: Sizes.size20,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: !(_formKey.currentState != null &&
+                              _formKey.currentState!.validate())
+                          ? Colors.white
+                          : isDark
+                              ? Colors.black
+                              : Colors.white,
                     ),
                   ),
                 ),
