@@ -1,1 +1,0 @@
-enum FollowType { followers, following }
